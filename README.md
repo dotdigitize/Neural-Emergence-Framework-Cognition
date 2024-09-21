@@ -275,13 +275,84 @@ class LLMIntegration:
 ```
 
 
-### 5. **Agent Manager**
-Agents represent intelligent actors in the system, responsible for managing various actions and tasks. The agent network is a simple neural network that makes decisions based on inputs from the global workspace. These decisions influence both the neuromorphic network and the LLM.
+## 5. Dynamic Agent Manager
 
-**Purpose:**
-- Simulate a higher-level decision-making process using neural networks.
-- Interact with the global workspace and contribute to emergent behavior.
-- Adapt to environmental stimuli and the LLM's outputs.
+The Dynamic Agent Manager creates and spawns intelligent LLM-based agents dynamically as the system evolves. These agents manage various tasks and actions, autonomously adapting to the environment based on inputs from the global workspace. The agents influence both the neuromorphic network and the LLM, driving higher-level decision-making and enabling the system to handle increasingly complex scenarios.
+
+### Purpose:
+- Dynamically create intelligent LLM agents that respond to environmental inputs and system evolution.
+- Simulate high-level decision-making processes through intelligent agents that influence the neuromorphic network and LLM.
+- Interact with the global workspace to contribute to emergent behaviors.
+- Adapt continuously to environmental stimuli and LLM outputs.
+
+### Code Example:
+
+```python
+class Agent(nn.Module):
+    \"\"\"
+    Reinforcement Learning Agent that makes decisions based on inputs from the global workspace.
+    Inspired by Greg Brockman's work on OpenAI Gym and RL.
+    \"\"\"
+    def __init__(self, input_size, hidden_size, output_size):
+        super(Agent, self).__init__()
+        # Neural network architecture
+        self.model = nn.Sequential(
+            nn.Linear(input_size, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, output_size),
+            nn.Softmax(dim=-1)
+        )
+
+    def forward(self, x):
+        return self.model(x)
+
+class AgentManager:
+    \"\"\"
+    Manages the Agent, interacts with the global workspace, handles LLM interactions,
+    and updates the agent based on rewards.
+    \"\"\"
+    def __init__(self, global_workspace):
+        self.global_workspace = global_workspace
+        self.agent = Agent(input_size=10, hidden_size=128, output_size=3)  # Example sizes
+        self.optimizer = optim.Adam(self.agent.parameters(), lr=0.001)
+        self.criterion = nn.CrossEntropyLoss()
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.agent.to(self.device)
+        self.stop_event = threading.Event()
+        self.thread = threading.Thread(target=self.run)
+        self.thread.daemon = True
+        self.setup_database()
+        self.llama_model_name = 'llama3.1:8b'  # Model name
+        self.llama = ollama.Model(self.llama_model_name)
+        self.context_window = []
+        self.max_context_length = 5  # Max number of previous exchanges to keep
+        self.logging_enabled = True
+        self.command_thread = threading.Thread(target=self.handle_commands)
+        self.command_thread.daemon = True
+        self.visualization_thread = threading.Thread(target=self.visualize_performance)
+        self.visualization_thread.daemon = True
+        self.performance_data = {
+            'rewards': [],
+            'timestamps': []
+        }
+
+    def setup_database(self):
+        \"\"\"
+        Set up the SQLite database for logging agent interactions.
+        \"\"\"
+        self.conn = sqlite3.connect('agent.db')
+        self.cursor = self.conn.cursor()
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS agent_interactions (
+                               id INTEGER PRIMARY KEY AUTOINCREMENT,
+                               time REAL,
+                               state TEXT,
+                               action INTEGER,
+                               reward REAL,
+                               llm_response TEXT)''')
+        self.conn.commit()
+        logging.debug("Database initialized.")
 
 ## System Design and Execution
 
