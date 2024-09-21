@@ -161,13 +161,72 @@ class GlobalWorkspace:
 
 
 
-### 3. **Evolutionary Dynamics**
+
+# Evolutionary Dynamics
+
 This module simulates evolutionary strategies by creating a "primordial soup" of random programs. Over time, these programs evolve by interacting, splitting, and merging. Entropy is used to measure the complexity of the programs, and the highest-performing programs are selected for further evolution.
 
-**Purpose:**
+## Purpose:
+
 - Simulate evolution of neural and cognitive processes.
 - Use entropy to drive self-improvement and complexity.
 - Log results in a database and interact with the global workspace.
+
+```python
+class EvolutionaryDynamics:
+    def __init__(self, global_workspace):
+        self.global_workspace = global_workspace
+        self.SOUP_SIZE = 1000  # Increased size for complexity
+        self.PROGRAM_LENGTH = 100  # Length of each program
+        self.MAX_STEPS = 1000  # Max execution steps for programs
+        self.THRESHOLD = 0.1  # Threshold for certain conditions
+        self.MUTATION_RATE = 0.01  # Mutation rate for genetic operations
+        self.CROSSOVER_RATE = 0.7  # Crossover rate for breeding
+        self.EPOCHS = 100  # Number of evolutionary epochs
+        self.soup = self.create_soup(self.SOUP_SIZE, self.PROGRAM_LENGTH)
+        self.setup_database()
+        self.current_epoch = 0
+
+    def generate_random_program(self, length):
+        symbols = ['>', '<', '+', '-', '.', ',', '[', ']']
+        return ''.join(random.choice(symbols) for _ in range(length))
+
+    def create_soup(self, size, length):
+        return [self.generate_random_program(length) for _ in range(size)]
+
+    def high_order_entropy(self, program):
+        shannon_entropy = self.calculate_shannon_entropy(program)
+        kolmogorov_complexity = self.estimate_kolmogorov_complexity(program)
+        return shannon_entropy - (kolmogorov_complexity / len(program) if len(program) > 0 else 0)
+
+    def calculate_shannon_entropy(self, data):
+        if not data:
+            return 0.0
+        frequencies = {char: data.count(char) for char in set(data)}
+        total = len(data)
+        entropy = -sum((freq / total) * math.log2(freq / total) for freq in frequencies.values())
+        return entropy
+
+    def estimate_kolmogorov_complexity(self, data):
+        compressed = zlib.compress(data.encode('utf-8'))
+        return len(compressed)
+
+    def run_epoch(self):
+        fitness_scores = [self.fitness_function(prog) for prog in self.soup]
+        max_fitness = max(fitness_scores)
+        avg_fitness = sum(fitness_scores) / len(fitness_scores)
+        entropies = [self.high_order_entropy(prog) for prog in self.soup]
+        avg_entropy = sum(entropies) / len(entropies)
+        diversity = self.calculate_diversity(self.soup)
+
+        # Log statistics and write to global workspace
+        self.global_workspace.write('avg_entropy', avg_entropy)
+        self.global_workspace.write('diversity_index', diversity)
+
+    def fitness_function(self, program):
+        return self.high_order_entropy(program)
+```
+
 
 ### 4. **LLM Integration**
 This component connects to a pre-trained local language model (LLM) such as in the example python file `llama3.1:8b` model from the `ollama` library. The LLM reads from the global workspace and makes decisions based on current neural activations and other metrics. These decisions are then fed back into the system to modulate neural parameters or agent behaviors.
