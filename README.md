@@ -301,3 +301,8 @@ The cryptocurrency could be earned through:
 
 This innovative approach provides a tangible metric for evaluating and rewarding AI's cognitive abilities while creating a novel intersection between AI research and blockchain technologies.
 
+## Contributing
+
+Contributions are welcome! The code is work in progress so if you have ideas or improvements, feel free to submit a pull request or open an issue to discuss your thoughts.
+
+---
