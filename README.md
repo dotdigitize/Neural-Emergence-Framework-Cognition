@@ -170,7 +170,7 @@ This module simulates evolutionary strategies by creating a "primordial soup" of
 - Log results in a database and interact with the global workspace.
 
 ### 4. **LLM Integration**
-This component connects to a pre-trained large language model (LLM) such as in the example python file `llama3.1:8b` model from the `ollama` library. The LLM reads from the global workspace and makes decisions based on current neural activations and other metrics. These decisions are then fed back into the system to modulate neural parameters or agent behaviors.
+This component connects to a pre-trained local language model (LLM) such as in the example python file `llama3.1:8b` model from the `ollama` library. The LLM reads from the global workspace and makes decisions based on current neural activations and other metrics. These decisions are then fed back into the system to modulate neural parameters or agent behaviors.
 
 **Purpose:**
 - Leverage LLM for high-level cognitive processing.
