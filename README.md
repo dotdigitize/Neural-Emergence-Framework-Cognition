@@ -356,6 +356,7 @@ class AgentManager:
                                llm_response TEXT)''')
         self.conn.commit()
         logging.debug("Database initialized.")
+```
 
 ## System Design and Execution
 
