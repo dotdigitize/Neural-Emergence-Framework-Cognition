@@ -22,6 +22,54 @@ The neuromorphic network uses spiking neural networks (SNN) to simulate the brai
 - Log activity to a database for further analysis.
 - Interface with the global workspace to share neural states, voltages, and firing rates.
 
+**Code Sample:**
+
+```python
+class NeuromorphicNetwork:
+    def __init__(self, global_workspace: GlobalWorkspace):
+        self.global_workspace = global_workspace
+        self.setup_database()
+        self.build_model()
+        self.run_duration = 1000 * ms  # Simulation run time
+        self.time_step = 0.1 * ms      # Simulation time step
+
+    def setup_database(self):
+        self.conn = sqlite3.connect('neuro_activity.db')
+        self.cursor = self.conn.cursor()
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS neural_activity (
+                               time REAL,
+                               neuron_id INTEGER,
+                               variable TEXT,
+                               value REAL)''')
+        self.conn.commit()
+
+    def build_model(self):
+        self.N = 1000  # Number of neurons
+        eqs = '''
+        dv/dt = (I_syn + I_inj - v) / tau : volt (unless refractory)
+        I_syn = g_syn * (E_syn - v) : amp
+        dg_syn/dt = -g_syn / tau_syn : siemens
+        I_inj : amp
+        tau : second
+        E_syn : volt
+        '''
+        self.neurons = b2.NeuronGroup(self.N, eqs,
+                                      threshold='v > -50*mV',
+                                      reset='v = -65*mV',
+                                      refractory=5*ms,
+                                      method='euler')
+        self.synapses = b2.Synapses(self.neurons, self.neurons,
+                                    '''
+                                    w : siemens
+                                    dpre/dt = -pre / tau_pre : 1 (event-driven)
+                                    dpost/dt = -post / tau_post : 1 (event-driven)
+                                    ''')
+        self.synapses.connect(p=0.1)
+        self.synapses.w = 0.5 * nS  # Initial synaptic weight
+```
+
+This neuromorphic network interacts with the global workspace to store and share neural states, including voltages and synaptic weights, and processes data for further analysis.
+
 ### 2. **Global Workspace**
 The global workspace acts as the central hub for communication between components. Each component can write its data to the global workspace and read from it, allowing a shared memory architecture to emerge.
 
