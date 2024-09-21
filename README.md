@@ -80,17 +80,6 @@ The global workspace acts as the central hub for communication between component
 - Store shared states, such as neural activations, entropy values, and modulation instructions.
 
 ```python
-# File: global_workspace.py
-
-import threading
-import time
-import logging
-import json
-from collections import defaultdict
-from typing import Any, Dict, Optional, Callable, List, Set
-
-logging.basicConfig(level=logging.DEBUG)
-
 class GlobalWorkspace:
     def __init__(self):
         self._shared_memory: Dict[str, Any] = {}
@@ -168,8 +157,6 @@ class GlobalWorkspace:
                 self._subscribers[key].remove(callback)
                 if self._logging_enabled:
                     logging.debug(f"Unsubscribed from key: {key}")
-
-    # Additional methods omitted for brevity
 ```
 
 
