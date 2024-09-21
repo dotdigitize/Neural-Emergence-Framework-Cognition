@@ -275,15 +275,18 @@ class LLMIntegration:
 ```
 
 
-## 5. Dynamic Agent Manager
+### 5. Agent Manager
 
-The Dynamic Agent Manager creates and spawns intelligent LLM-based agents dynamically as the system evolves. These agents manage various tasks and actions, autonomously adapting to the environment based on inputs from the global workspace. The agents influence both the neuromorphic network and the LLM, driving higher-level decision-making and enabling the system to handle increasingly complex scenarios.
+The **Agent Manager** is responsible for dynamically creating and managing LLM-based agents. These agents act as intelligent entities within the system, making decisions and interacting with the neuromorphic network and other LLM agents. They manage various tasks and processes, while continuously adapting to system inputs and outputs from the global workspace.
 
-### Purpose:
-- Dynamically create intelligent LLM agents that respond to environmental inputs and system evolution.
-- Simulate high-level decision-making processes through intelligent agents that influence the neuromorphic network and LLM.
-- Interact with the global workspace to contribute to emergent behaviors.
-- Adapt continuously to environmental stimuli and LLM outputs.
+Each agent is an LLM that is dynamically created based on the system's needs. These agents interact with the **Global Workspace**, making decisions informed by real-time data such as neural activations and system states.
+
+#### Purpose:
+
+- Dynamically spawn and manage **LLM-based agents**.
+- Use LLMs to simulate higher-level cognitive processes.
+- Continuously adapt and evolve based on inputs from the environment, the global workspace, and other LLM agents.
+
 
 ### Code Example:
 
