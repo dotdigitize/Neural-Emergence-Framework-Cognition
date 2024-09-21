@@ -228,13 +228,52 @@ class EvolutionaryDynamics:
 ```
 
 
-### 4. **LLM Integration**
-This component connects to a pre-trained local language model (LLM) such as in the example python file `llama3.1:8b` model from the `ollama` library. The LLM reads from the global workspace and makes decisions based on current neural activations and other metrics. These decisions are then fed back into the system to modulate neural parameters or agent behaviors.
 
-**Purpose:**
+### 4. LLM Integration
+
+This component connects to a pre-trained local language model (LLM) such as the example Python file `llama3.1:8b` model from the `ollama` library. The LLM reads from the global workspace and makes decisions based on current neural activations and other metrics. These decisions are then fed back into the system to modulate neural parameters or agent behaviors.
+
+**Purpose**:
 - Leverage LLM for high-level cognitive processing.
 - Simulate abstract reasoning and decision-making.
 - Write decisions back to the global workspace for action by other components.
+
+```python
+class LLMIntegration:
+    def __init__(self, global_workspace):
+        self.global_workspace = global_workspace
+        self.llm_api_url = "http://localhost:XXXX"  # Placeholder URL for local LLM API
+        self.context_window = []  # For maintaining conversation context
+        self.max_context_length = 5  # Max number of previous exchanges to keep
+
+    def ollama_generate_response(self, prompt):
+        payload = {'prompt': prompt}
+        response = requests.post(self.llm_api_url, json=payload)
+        if response.status_code == 200:
+            return response.json().get('text', '').strip()
+        return None
+
+    def run(self):
+        neural_activations = self.global_workspace.read('neural_activations')
+        avg_entropy = self.global_workspace.read('avg_entropy')
+        if neural_activations and avg_entropy:
+            prompt = self.format_prompt('modulation', {'activations': neural_activations[:10], 'entropy': avg_entropy})
+            output_text = self.ollama_generate_response(prompt)
+            if output_text:
+                self.global_workspace.write('modulation', self.parse_llm_output(output_text))
+
+    def format_prompt(self, template_name, data):
+        template = self.prompt_templates.get(template_name, self.prompt_templates['default'])
+        return template.format(**data)
+
+    def parse_llm_output(self, output):
+        if 'increase activity' in output.lower():
+            return 'increase'
+        elif 'decrease activity' in output.lower():
+            return 'decrease'
+        return 'maintain'
+```
+
 
 ### 5. **Agent Manager**
 Agents represent intelligent actors in the system, responsible for managing various actions and tasks. The agent network is a simple neural network that makes decisions based on inputs from the global workspace. These decisions influence both the neuromorphic network and the LLM.
