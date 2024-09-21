@@ -229,29 +229,34 @@ class EvolutionaryDynamics:
 
 
 
-### 4. LLM Integration
+## 4. LLM Integration
 
-This component connects to a pre-trained local language model (LLM) such as the example Python file `llama3.1:8b` model from the `ollama` library. The LLM reads from the global workspace and makes decisions based on current neural activations and other metrics. These decisions are then fed back into the system to modulate neural parameters or agent behaviors.
+This component connects to a pre-trained local language model (LLM) such as the example Python file `llama3.1:8b` model from the ollama library. The LLM reads from the global workspace and makes decisions based on current neural activations and other metrics. These decisions are then fed back into the system to modulate neural parameters or agent behaviors.
 
-**Purpose**:
+### Purpose:
+
 - Leverage LLM for high-level cognitive processing.
 - Simulate abstract reasoning and decision-making.
+- Dynamically create new agents based on the system's needs.
 - Write decisions back to the global workspace for action by other components.
 
+The LLM Integration component also spawns new LLM-based agents as required by the system. These agents are dynamically created based on the system's real-time data inputs from the Global Workspace, enabling the system to adjust its behavior based on environmental stimuli and neural activations.
 
+## 5. Agent Manager
 
+The Agent Manager is responsible for managing the dynamically created LLM-based agents. These agents act as intelligent entities within the system, making decisions and interacting with the neuromorphic network and other LLM agents. They manage various tasks and processes, while continuously adapting to system inputs and outputs from the global workspace.
 
-### 5. Agent Manager
+Each agent created by the LLM Integration is managed by the Agent Manager. These agents interact with the Global Workspace, making decisions informed by real-time data such as neural activations and system states. The Agent Manager is also responsible for handling LLM interactions, managing rewards, and updating agents dynamically based on system feedback.
 
-The **Agent Manager** is responsible for dynamically creating and managing LLM-based agents. These agents act as intelligent entities within the system, making decisions and interacting with the neuromorphic network and other LLM agents. They manage various tasks and processes, while continuously adapting to system inputs and outputs from the global workspace.
+### Core Responsibilities:
 
-Each agent is an LLM that is dynamically created based on the system's needs. These agents interact with the **Global Workspace**, making decisions informed by real-time data such as neural activations and system states.
+- Manage agent spawning and lifecycle based on system requirements.
+- Interact with the Global Workspace to fetch neural activations and system states.
+- Handle decision-making processes based on LLM outputs.
+- Continuously update agents based on rewards and feedback loops.
+- Write back decisions to the Global Workspace for system-wide synchronization.
 
-#### Purpose:
-
-- Dynamically spawn and manage **LLM-based agents**.
-- Use LLMs to simulate higher-level cognitive processes.
-- Continuously adapt and evolve based on inputs from the environment, the global workspace, and other LLM agents.
+The Agent Manager ensures seamless integration between multiple agents, continuously updating and managing them for optimal system performance.
 
 
 
