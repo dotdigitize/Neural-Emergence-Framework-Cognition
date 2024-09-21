@@ -304,6 +304,6 @@ This innovative approach provides a tangible metric for evaluating and rewarding
 
 ## Contributing
 
-Contributions are welcome! The code is work in progress so if you have ideas or improvements, feel free to submit a pull request or open an issue to discuss your thoughts.
+Contributions are welcome! The code is (poc) "proof of concept" work in progress so if you have ideas or improvements, feel free to submit a pull request or open an issue to discuss your thoughts.
 
 ---
