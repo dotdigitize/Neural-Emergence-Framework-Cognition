@@ -70,12 +70,109 @@ class NeuromorphicNetwork:
 
 This neuromorphic network interacts with the global workspace to store and share neural states, including voltages and synaptic weights, and processes data for further analysis.
 
-### 2. **Global Workspace**
+
+## 2. Global Workspace
+
 The global workspace acts as the central hub for communication between components. Each component can write its data to the global workspace and read from it, allowing a shared memory architecture to emerge.
 
-**Purpose:**
+**Purpose**:
 - Facilitate communication between independent system components.
 - Store shared states, such as neural activations, entropy values, and modulation instructions.
+
+```python
+# File: global_workspace.py
+
+import threading
+import time
+import logging
+import json
+from collections import defaultdict
+from typing import Any, Dict, Optional, Callable, List, Set
+
+logging.basicConfig(level=logging.DEBUG)
+
+class GlobalWorkspace:
+    def __init__(self):
+        self._shared_memory: Dict[str, Any] = {}
+        self._lock = threading.Lock()
+        self._subscribers: Dict[str, List[Callable[[Any], None]]] = defaultdict(list)
+        self._event_conditions: Dict[str, threading.Condition] = defaultdict(threading.Condition)
+        self._data_timestamps: Dict[str, float] = {}
+        self._data_versions: Dict[str, int] = {}
+        self._data_expirations: Dict[str, float] = {}
+        self._max_data_age: float = float('inf')
+        self._cleanup_interval: float = 60.0
+        self._cleanup_thread = threading.Thread(target=self._cleanup_loop, daemon=True)
+        self._cleanup_thread.start()
+        self._logging_enabled: bool = True
+        self._persistence_file: Optional[str] = None
+        self._persistence_interval: float = 300.0
+        self._persistence_thread = threading.Thread(target=self._persistence_loop, daemon=True)
+        self._persistence_thread.start()
+        self._observers: Set[Callable[[str, Any], None]] = set()
+        self._stop_event = threading.Event()
+
+    def write(self, key: str, value: Any, expiration: Optional[float] = None):
+        with self._lock:
+            self._shared_memory[key] = value
+            timestamp = time.time()
+            self._data_timestamps[key] = timestamp
+            self._data_versions[key] = self._data_versions.get(key, 0) + 1
+            if expiration is not None:
+                self._data_expirations[key] = timestamp + expiration
+            elif self._max_data_age != float('inf'):
+                self._data_expirations[key] = timestamp + self._max_data_age
+            else:
+                self._data_expirations.pop(key, None)
+
+            if self._logging_enabled:
+                logging.debug(f"Write: key={key}, value={value}, timestamp={timestamp}")
+
+            for callback in self._subscribers.get(key, []):
+                threading.Thread(target=callback, args=(value,), daemon=True).start()
+
+            condition = self._event_conditions.get(key)
+            if condition:
+                with condition:
+                    condition.notify_all()
+
+            for observer in self._observers:
+                threading.Thread(target=observer, args=(key, value), daemon=True).start()
+
+    def read(self, key: str, default: Any = None) -> Any:
+        with self._lock:
+            value = self._shared_memory.get(key, default)
+            if self._logging_enabled:
+                logging.debug(f"Read: key={key}, value={value}")
+            return value
+
+    def wait_for(self, key: str, timeout: Optional[float] = None) -> Any:
+        condition = self._event_conditions.setdefault(key, threading.Condition())
+        with condition:
+            if key in self._shared_memory:
+                return self._shared_memory[key]
+            notified = condition.wait(timeout=timeout)
+            if not notified:
+                raise TimeoutError(f"Timeout waiting for key '{key}'")
+            return self._shared_memory[key]
+
+    def subscribe(self, key: str, callback: Callable[[Any], None]):
+        with self._lock:
+            self._subscribers[key].append(callback)
+            if self._logging_enabled:
+                logging.debug(f"Subscribed to key: {key}")
+
+    def unsubscribe(self, key: str, callback: Callable[[Any], None]):
+        with self._lock:
+            if callback in self._subscribers.get(key, []):
+                self._subscribers[key].remove(callback)
+                if self._logging_enabled:
+                    logging.debug(f"Unsubscribed from key: {key}")
+
+    # Additional methods omitted for brevity
+```
+
+
 
 ### 3. **Evolutionary Dynamics**
 This module simulates evolutionary strategies by creating a "primordial soup" of random programs. Over time, these programs evolve by interacting, splitting, and merging. Entropy is used to measure the complexity of the programs, and the highest-performing programs are selected for further evolution.
