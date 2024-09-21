@@ -3,8 +3,9 @@
 
 ## Vision
 
-This project envisions a comprehensive neuromorphic system that integrates neuromorphic network simulations, evolutionary dynamics, local language models (LLMs), and agents into a cohesive architecture. The purpose is to explore emergent behaviors that may arise from combining spiking neural networks, cognitive processing, and large-scale simulations. The framework is designed to function on modern hardware and inspired by theoretical insights from leading AI scientists.
+This project envisions a comprehensive neuromorphic system that integrates neuromorphic network simulations, evolutionary dynamics, and revolutionary local language model (LLM) agents that are dynamically created based on data and emergent algorithms. These agents evolve in real time as the system processes information, adapting and expanding as new patterns and behaviors emerge. By combining spiking neural networks with cognitive processing and large-scale simulations, the framework explores novel emergent behaviors and is designed to function on modern hardware.
 
+As the system evolves and demonstrates increasingly sophisticated cognitive abilities, a unique cryptocurrency reward system is introduced. Each time an agent exhibits advanced cognition, invents something, or makes a meaningful contribution, the system rewards it with its own cryptocurrency. This currency symbolizes the agent's success and can be used to track its progress or fuel further system development. This innovative reward mechanism contributes to the advancement of cognitive AI systems, empowering agents to manage resources autonomously and drive continual growth and innovation.
 ### Purpose
 
 The primary goal of this system is to simulate human-like cognition and behavior in a controlled computational environment. The design incorporates elements of spiking neural networks (inspired by biology), global workspaces (for inter-component communication), and evolutionary dynamics (for self-improving algorithms). Additionally, LLMs are used for higher-level decision-making, simulating aspects of language and abstract thinking.
