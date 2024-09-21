@@ -1,5 +1,6 @@
 
 # Neuromorphic System Framework
+![neuromorphic system creativedisruptor dotdigitize](https://github.com/user-attachments/assets/6fcc589a-7a22-4863-8ad5-46b0985eb97a)
 
 ## Vision
 
