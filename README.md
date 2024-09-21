@@ -238,41 +238,7 @@ This component connects to a pre-trained local language model (LLM) such as the 
 - Simulate abstract reasoning and decision-making.
 - Write decisions back to the global workspace for action by other components.
 
-```python
-class LLMIntegration:
-    def __init__(self, global_workspace):
-        self.global_workspace = global_workspace
-        self.llm_api_url = "http://localhost:XXXX"  # Placeholder URL for local LLM API
-        self.context_window = []  # For maintaining conversation context
-        self.max_context_length = 5  # Max number of previous exchanges to keep
 
-    def ollama_generate_response(self, prompt):
-        payload = {'prompt': prompt}
-        response = requests.post(self.llm_api_url, json=payload)
-        if response.status_code == 200:
-            return response.json().get('text', '').strip()
-        return None
-
-    def run(self):
-        neural_activations = self.global_workspace.read('neural_activations')
-        avg_entropy = self.global_workspace.read('avg_entropy')
-        if neural_activations and avg_entropy:
-            prompt = self.format_prompt('modulation', {'activations': neural_activations[:10], 'entropy': avg_entropy})
-            output_text = self.ollama_generate_response(prompt)
-            if output_text:
-                self.global_workspace.write('modulation', self.parse_llm_output(output_text))
-
-    def format_prompt(self, template_name, data):
-        template = self.prompt_templates.get(template_name, self.prompt_templates['default'])
-        return template.format(**data)
-
-    def parse_llm_output(self, output):
-        if 'increase activity' in output.lower():
-            return 'increase'
-        elif 'decrease activity' in output.lower():
-            return 'decrease'
-        return 'maintain'
-```
 
 
 ### 5. Agent Manager
@@ -288,75 +254,7 @@ Each agent is an LLM that is dynamically created based on the system's needs. Th
 - Continuously adapt and evolve based on inputs from the environment, the global workspace, and other LLM agents.
 
 
-### Code Example:
 
-```python
-class Agent(nn.Module):
-    \"\"\"
-    Reinforcement Learning Agent that makes decisions based on inputs from the global workspace.
-    Inspired by Greg Brockman's work on OpenAI Gym and RL.
-    \"\"\"
-    def __init__(self, input_size, hidden_size, output_size):
-        super(Agent, self).__init__()
-        # Neural network architecture
-        self.model = nn.Sequential(
-            nn.Linear(input_size, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, hidden_size),
-            nn.ReLU(),
-            nn.Linear(hidden_size, output_size),
-            nn.Softmax(dim=-1)
-        )
-
-    def forward(self, x):
-        return self.model(x)
-
-class AgentManager:
-    \"\"\"
-    Manages the Agent, interacts with the global workspace, handles LLM interactions,
-    and updates the agent based on rewards.
-    \"\"\"
-    def __init__(self, global_workspace):
-        self.global_workspace = global_workspace
-        self.agent = Agent(input_size=10, hidden_size=128, output_size=3)  # Example sizes
-        self.optimizer = optim.Adam(self.agent.parameters(), lr=0.001)
-        self.criterion = nn.CrossEntropyLoss()
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.agent.to(self.device)
-        self.stop_event = threading.Event()
-        self.thread = threading.Thread(target=self.run)
-        self.thread.daemon = True
-        self.setup_database()
-        self.llama_model_name = 'llama3.1:8b'  # Model name
-        self.llama = ollama.Model(self.llama_model_name)
-        self.context_window = []
-        self.max_context_length = 5  # Max number of previous exchanges to keep
-        self.logging_enabled = True
-        self.command_thread = threading.Thread(target=self.handle_commands)
-        self.command_thread.daemon = True
-        self.visualization_thread = threading.Thread(target=self.visualize_performance)
-        self.visualization_thread.daemon = True
-        self.performance_data = {
-            'rewards': [],
-            'timestamps': []
-        }
-
-    def setup_database(self):
-        \"\"\"
-        Set up the SQLite database for logging agent interactions.
-        \"\"\"
-        self.conn = sqlite3.connect('agent.db')
-        self.cursor = self.conn.cursor()
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS agent_interactions (
-                               id INTEGER PRIMARY KEY AUTOINCREMENT,
-                               time REAL,
-                               state TEXT,
-                               action INTEGER,
-                               reward REAL,
-                               llm_response TEXT)''')
-        self.conn.commit()
-        logging.debug("Database initialized.")
-```
 
 ## System Design and Execution
 
